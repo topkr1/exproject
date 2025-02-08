@@ -1,5 +1,5 @@
 <template>
-  <section class="my-info">
+  <section class="my-info" style="margin-left: 100px; margin-top: 50px">
     <h1>내 정보 관리</h1>
     <div class="profile-container">
       <!-- 프로필 사진 변경 -->
@@ -7,8 +7,9 @@
         <img
           :src="profilePhoto"
           alt="프로필 사진"
-          @click="changePhoto"/>
-        <button @click="changePhoto">사진 변경</button>
+          @click="showProfileOverlay"/>
+        <button @click="triggerFileInput">사진 변경</button>
+        <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;"/>
       </div>
       <!-- 이름/닉네임 변경 -->
       <div class="info-fields">
@@ -31,6 +32,11 @@
         placeholder="자신을 한 줄로 소개해보세요"
       ></textarea>
     </div>
+
+    <!-- 프로필 확대 -->
+     <div v-if="isOverlayVisible" class="overlay" @click="hideProfileOverlay">
+      <img :src="profilePhoto" class="overlay-img"/>
+     </div>
   </section>
 </template>
 
@@ -43,12 +49,35 @@ export default {
       name: "",
       nickname: "",
       introduction: "",
+      isOverlayVisible: false,
     };
   },
   methods: {
-    changePhoto() {
-      alert("저장 완료");
+    triggerFileInput() {
+      this.$refs.fileInput.click();
     },
+    // 파일 선택 후 이미지 변경
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if(file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.profilePhoto = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }else {
+        alert("이미지 파일을 선택해주세요.");
+      }
+    },
+
+    showProfileOverlay() {
+      this.isOverlayVisible = true;
+    },
+
+    hideProfileOverlay() {
+      this.isOverlayVisible = false;
+    },
+
     saveInfo() {
       alert('이름: ${this.name || "없음"}, 닉네임: ${this.nickname || "없음"}, 소개: ${this.introduction || "없음"}');
     },
@@ -62,7 +91,7 @@ export default {
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 30px;
   margin-bottom: 20px;
 }
 
@@ -88,17 +117,17 @@ h1 {
 
 .profile-photo button {
   position: absolute;
+  left: 50%;
   top: 100%;
-  left: 100%;
-  margin-top: 10px;
   padding: 5px 10px;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .info-fields {
   flex: 1;
+  position: relative;
 }
 
 .input-name {
@@ -111,20 +140,20 @@ h1 {
 
 .input-name label {
   display: block;
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 5px;
 }
 
 .input-nickname label {
   display: block;
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 5px;
 }
 
 .input-name input {
   width: 200px;
   padding: 10px;
-  font-size: 16px;
+  font-size: 18px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -132,15 +161,16 @@ h1 {
 .input-nickname input {
   width: 500px;
   padding: 10px;
-  font-size: 16px;
+  font-size: 18px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
 .info-fields button {
-  width: 70px;
-  height: 40px;
+  position: absolute;
   font-size: 16px;
+  padding: 5px 10px;
+  left: 465px;
 }
 
 .intro-container {
@@ -149,7 +179,7 @@ h1 {
 
 .intro-container label {
   display: block;
-  font-size: 14px;
+  font-size: 22px;
   margin-bottom: 5px;
 }
 
@@ -157,8 +187,36 @@ h1 {
   width: 100%;
   height: 80px;
   padding: 10px;
-  font-size: 14px;
+  font-size: 18px;
   border: 1px solid #ddd;
   border-radius: 4px;
+}
+
+.overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.6);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+
+.overlay-img {
+max-width: 60%;
+max-height: 90%;
+border-radius: 10px;
+transition: transform 0.3s ease;
+}
+
+.profile-photo img {
+width: 180px;
+height: 220px;
+border: 1px solid #ddd;
+object-fit: cover;
+cursor: pointer;
 }
 </style>
