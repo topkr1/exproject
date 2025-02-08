@@ -2,6 +2,7 @@
   <section class="my-info" style="margin-left: 100px; margin-top: 50px">
     <h1>내 정보 관리</h1>
     <div class="profile-container">
+
       <!-- 프로필 사진 변경 -->
       <div class="profile-photo">
         <img
@@ -11,6 +12,7 @@
         <button @click="triggerFileInput">사진 변경</button>
         <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;"/>
       </div>
+
       <!-- 이름/닉네임 변경 -->
       <div class="info-fields">
         <div class="input-name">
@@ -24,6 +26,7 @@
         <button @click="saveInfo">저장</button>
       </div>
     </div>
+
     <!-- 한 줄 소개 -->
     <div class="intro-container">
       <label>한 줄 소개</label>
@@ -52,10 +55,17 @@ export default {
       isOverlayVisible: false,
     };
   },
+
+  // 임시저장~~~~~~
+  created() {
+    this.loadInfo();
+  },
+
   methods: {
     triggerFileInput() {
       this.$refs.fileInput.click();
     },
+
     // 파일 선택 후 이미지 변경
     handleFileChange(event) {
       const file = event.target.files[0];
@@ -63,6 +73,10 @@ export default {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.profilePhoto = e.target.result;
+
+          // 임시저장~~~~
+          this.saveToLocalStorage("profilePhoto", e.target.result);
+          
         };
         reader.readAsDataURL(file);
       }else {
@@ -78,10 +92,27 @@ export default {
       this.isOverlayVisible = false;
     },
 
+    // 임시 저장 부분~~~~~~~~~~~~~~~~삭제
     saveInfo() {
-      alert('이름: ${this.name || "없음"}, 닉네임: ${this.nickname || "없음"}, 소개: ${this.introduction || "없음"}');
+    this.saveToLocalStorage("name", this.name);
+    this.saveToLocalStorage("nickname", this.nickname);
+    this.saveToLocalStorage("introduction", this.introduction);
+    alert("정보가 저장되었습니다!");
     },
-  },
+    loadInfo() {
+    this.profilePhoto = this.getFromLocalStorage("profilePhoto") || this.profilePhoto;
+    this.name = this.getFromLocalStorage("name") || "";
+    this.nickname = this.getFromLocalStorage("nickname") || "";
+    this.introduction = this.getFromLocalStorage("introduction") || "";
+    },
+    saveToLocalStorage(key, value) {
+      localStorage.setItem(key, value);
+    },
+    getFromLocalStorage(key) {
+    return localStorage.getItem(key);
+    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  }
 };
 </script>
 

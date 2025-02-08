@@ -1,28 +1,43 @@
 <template>
   <div class="container">
-    <!-- 로고 -->
-    <nav class="sidebar">
-      <header class="logo">LOGO</header>
+    <!-- 상단바 -->
+    <header class="header">
+      <div class="logo">
+        <button @click="goToPage('main')">LOGO</button>
+      </div>
+      <nav class="nav">
+        <button @click="goToPage('/my-information')">마이페이지</button>
+        <button @click="goToPage('qa')">문답</button>
+        <button @click="goToPage('memories')">주마등</button>
+        <button @click="goToPage('friends')">친구페이지</button>
+      </nav>
+      <div class="signup">
+        <button @click="goToPage('signup')">회원가입</button>
+      </div>
+    </header>
 
-      <!-- 문항 목록 -->
-      <ul>
-        <li
-          v-for="(item, index) in menuItems"
-          :key="index"
-          @mouseover="hoverItem = index"
-          @mouseleave="hoverItem = null"
-          @click="navigate(item.route)"
-          :class="{ active: activeItem === index, hover: hoverItem === index }"
-        >
-          {{ item.name }}
-        </li>
-      </ul>
-    </nav>
+    <div class="main-layout">
+      <!-- 사이드바 -->
+      <nav class="sidebar">
+        <ul>
+          <li
+            v-for="(item, index) in menuItems"
+            :key="index"
+            @mouseover="hoverItem = index"
+            @mouseleave="hoverItem = null"
+            @click="navigate(item.route)"
+            :class="{ active: activeItem === index, hover: hoverItem === index }"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+      </nav>
 
-    <!-- 페이지 내용 -->
-    <main class="content">
-      <slot /> <!-- 페이지별 내용 삽입 -->
-    </main>
+      <!-- 페이지 내용 -->
+      <main class="content">
+        <slot /> <!-- 페이지별 내용 삽입 -->
+      </main>
+    </div>
   </div>
 </template>
 
@@ -45,25 +60,63 @@ export default {
     navigate(route) {
       this.$router.push(route);
     },
-  },
+    goToPage(route) {
+      if (route === "main"){
+        window.location.href = "http://localhost:8080";
+      }else{
+      this.$router.push(route);
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
-
 .container {
+  font-family: Arial, sans-serif;
   display: flex;
+  flex-direction: column;
   height: 100vh;
   background-color: #f9f9f9;
 }
-.logo {
-  font-size: 24px;
-  font-weight: bold;
-  padding: 20px;
-  background-color: #fff;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f5f5f5;
   border-bottom: 1px solid #ddd;
-  text-align: center;
 }
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo button {
+  all: unset;
+}
+
+.nav button,
+.signup button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+
+.nav button:hover,
+.signup button:hover {
+  background-color: #eee;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+}
+
 .sidebar {
   width: 200px;
   background-color: #fff;
@@ -90,6 +143,7 @@ export default {
 .sidebar ul {
   margin-top: 20px;
 }
+
 .content {
   flex: 1;
   padding: 20px;
